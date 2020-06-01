@@ -6,7 +6,8 @@ export default class MyDocument extends Document {
   render() {
     return (
       <Html >
-        <Head ><title >Carlson SiteOPS</title ></Head >
+        <title >Carlson SiteOPS</title >
+        <Head />
         <body >
         <link
           rel = "stylesheet/less"

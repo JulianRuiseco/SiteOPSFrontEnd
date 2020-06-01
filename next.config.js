@@ -9,7 +9,7 @@ const withCss = require('@zeit/next-css');
 
 
 const prod = process.env.NODE_ENV === 'production';
-const prefix = prod ? '/next-dynamic-antd-theme/' : '/';
+const prefix = prod ? '/' : '/';
 
 const withAntdTheme = generateTheme({
   antDir: path.join(__dirname, './node_modules/antd'),
@@ -58,6 +58,8 @@ withAntd = (nextConfig = {}) => {
     },
   });
 };
+
+
 
 module.exports = withPlugins([withAntd, withLess, withTM, withSass, withCss, withAntdTheme], {
   serverRuntimeConfig: {  },

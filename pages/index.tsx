@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { Layout, Menu, Breadcrumb, Button } from 'antd';
-import { UserOutlined, LaptopOutlined, NotificationOutlined } from '@ant-design/icons';
+import { Layout, Menu, Button} from 'antd';
 import Icon from '@ant-design/icons';
-
 import changeTheme from 'next-dynamic-antd-theme';
+import { i18n, Link, withTranslation } from '../i18n'
+import PropTypes from 'prop-types'
 
 const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+const { Header, Content } = Layout;
 
 interface IndexPageProps {
 }
@@ -34,7 +34,7 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
           fill="#222"
           fill-rule="nonzero"
           d="M21 10.5l-3 3V18h-4.5l-3 3-3-3H3v-4.5l-3-3 3-3V3h4.5l3-3 3 3H18v4.5z"
-        ></path>
+        />
         <circle stroke="#FFF" stroke-width="1.5" cx="10.5" cy="10.5" r="4"></circle>
       </g>
     </svg>
@@ -53,7 +53,7 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
           d="M13.396 11c0-3.019-1.832-5.584-4.394-6.566A6.427 6.427 0 0111.304 4C15.002 4 18 7.135 18 11c0 3.866-2.998 7-6.698 7A6.42 6.42 0 019 17.566c2.564-.98 4.396-3.545 4.396-6.566z"
           fill="#FFF"
           fill-rule="nonzero"
-        ></path>
+        />
       </g>
     </svg>
         `,
@@ -62,6 +62,8 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
   );
 
   render() {
+    // @ts-ignore
+    const {t} = this.props;
     return (
       <Layout style = {{ minHeight: '100vh' }} >
         <Header className = "header" >
@@ -88,6 +90,7 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
                 minHeight: 280,
               }}
             >
+              <div>{t('h1')}</div>
               <Button
                 shape = "circle"
                 size = "large"
@@ -113,9 +116,26 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
             </Content >
           </Layout >
         </Layout >
+        <div>
+          <Button
+            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'de' : 'en')}
+          >
+            {t('change-locale')}
+          </Button>
+        </div>
       </Layout >
     );
   }
 }
 
-export default IndexPage;
+// @ts-ignore
+IndexPage.getInitialProps = async () => ({
+  namespacesRequired: ['common'],
+})
+
+// @ts-ignore
+IndexPage.propTypes = {
+  t: PropTypes.func.isRequired,
+}
+// @ts-ignore
+export default withTranslation('common')(IndexPage);
