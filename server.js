@@ -1,17 +1,18 @@
 const express = require('express')
+const cookieParser = require("cookie-parser")
 const next = require('next')
 const nextI18NextMiddleware = require('next-i18next/middleware').default
 
 const nextI18next = require('./i18n')
 
 const port = process.env.PORT || 3000
-console.log(process.env.NODE_ENV)
 const app = next({ dev: process.env.NODE_ENV !== 'production' })
 const handle = app.getRequestHandler();
 
 (async () => {
   await app.prepare()
   const server = express()
+  server.use(cookieParser())
 
   await nextI18next.initPromise
   server.use(nextI18NextMiddleware(nextI18next))

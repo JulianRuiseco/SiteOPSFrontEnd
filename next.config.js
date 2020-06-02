@@ -69,4 +69,7 @@ module.exports = withPlugins([withAntd, withLess, withTM, withSass, withCss, wit
     // config.node = { fs: 'empty' };
     return config;
   },
+  env: {
+    BACKEND_URI: 'http://localhost:4000', // insert your GraphQL Yoga url here
+  },
 });

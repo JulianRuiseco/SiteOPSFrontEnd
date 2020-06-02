@@ -1,13 +1,54 @@
-import React from 'react';
-
-import { Layout, Menu, Button} from 'antd';
-import Icon from '@ant-design/icons';
-import changeTheme from 'next-dynamic-antd-theme';
-import { i18n, Link, withTranslation } from '../i18n'
+import { useQuery } from "@apollo/react-hooks"
+import ME_QUERY from "../queries/ME_QUERY"
 import PropTypes from 'prop-types'
+import React, { Component } from 'react';
+import { Layout, Menu, Button, Space } from 'antd';
+
+import Login from '@/components/LogIn';
+import changeTheme from 'next-dynamic-antd-theme';
+import { i18n, Link, withTranslation } from '../i18n';
 
 const { SubMenu } = Menu;
 const { Header, Content } = Layout;
+
+const NewHome = (props) => {
+  let { loading, error, data, refetch } = useQuery(ME_QUERY)
+
+  if (error) console.log("error message is: ", error.message)
+  if (loading) return <p>loading</p>
+
+  const loginTriggered = () =>{
+    refetch();
+  }
+
+  if (data === undefined || data.user === undefined || data.user === null) {
+    return (
+      <>
+        <p>You are not signed in a!</p>
+        <Login  loginTriggered={loginTriggered}/>
+
+      </>
+    )
+  } else {
+    return (
+      <>
+        <MainPage {...props}/>
+      </>
+    )
+  }
+}
+
+// @ts-ignore
+NewHome.getInitialProps = async () => ({
+  namespacesRequired: ['common'],
+})
+
+// @ts-ignore
+NewHome.propTypes = {
+  t: PropTypes.func.isRequired,
+}
+
+export default withTranslation('common')(NewHome)
 
 interface IndexPageProps {
 }
@@ -16,7 +57,7 @@ interface IndexPageState {
   theme: 'default' | 'dark';
 }
 
-class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
+class MainPage extends Component<IndexPageProps, IndexPageState> {
   constructor(props: IndexPageProps) {
     super(props);
     this.state = {
@@ -24,60 +65,39 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
     };
   }
 
-  renderLight = props => (
-    <div
-      dangerouslySetInnerHTML = {{
-        __html: `
-   <svg width="1em" height="1em" viewBox="0 0 21 21">
-      <g fill="none" fill-rule="evenodd">
-        <path
-          fill="#222"
-          fill-rule="nonzero"
-          d="M21 10.5l-3 3V18h-4.5l-3 3-3-3H3v-4.5l-3-3 3-3V3h4.5l3-3 3 3H18v4.5z"
-        />
-        <circle stroke="#FFF" stroke-width="1.5" cx="10.5" cy="10.5" r="4"></circle>
-      </g>
-    </svg>
-        `,
-      }}
-    />
-  );
-  renderDark = props => (
-    <div
-      dangerouslySetInnerHTML = {{
-        __html: `
-   <svg width="1em" height="1em" viewBox="0 0 21 21">
-      <g fill="none" fill-rule="evenodd">
-        <circle fill="#222" cx="10.5" cy="10.5" r="10.5"></circle>
-        <path
-          d="M13.396 11c0-3.019-1.832-5.584-4.394-6.566A6.427 6.427 0 0111.304 4C15.002 4 18 7.135 18 11c0 3.866-2.998 7-6.698 7A6.42 6.42 0 019 17.566c2.564-.98 4.396-3.545 4.396-6.566z"
-          fill="#FFF"
-          fill-rule="nonzero"
-        />
-      </g>
-    </svg>
-        `,
-      }}
-    />
-  );
-
   render() {
     // @ts-ignore
-    const {t} = this.props;
+    const { t } = this.props;
     return (
       <Layout style = {{ minHeight: '100vh' }} >
         <Header className = "header" >
-          <div className = "logo" />
-          <Menu
-            theme = "dark"
-            mode = "horizontal"
-            defaultSelectedKeys = {['2']}
-            style = {{ lineHeight: '64px' }}
-          >
-            <Menu.Item key = "1" >nav 1</Menu.Item >
-            <Menu.Item key = "2" >nav 2</Menu.Item >
-            <Menu.Item key = "3" >nav 3</Menu.Item >
-          </Menu >
+          <Space direction = "horizontal" >
+            <div className = "logo" />
+            <Button
+              size = "large"
+              onClick = {() => {
+                const theme = this.state.theme == 'default' ? 'dark' : 'default';
+                this.setState({ theme }, () => {
+                  changeTheme(theme);
+                });
+              }}
+            >
+              changeTheme
+            </Button >
+            <Button
+              onClick = {() => i18n.changeLanguage(i18n.language === 'en' ? 'de' : 'en')}
+            >
+              {t('change-locale')}
+            </Button >
+            <Menu
+              theme = "dark"
+              mode = "horizontal"
+              defaultSelectedKeys = {['2']}
+              style = {{ lineHeight: '64px' }}
+            >
+              <Menu.Item key = "1" >nav 1</Menu.Item >
+            </Menu >
+          </Space >
         </Header >
         <Layout >
 
@@ -90,52 +110,12 @@ class IndexPage extends React.Component<IndexPageProps, IndexPageState> {
                 minHeight: 280,
               }}
             >
-              <div>{t('h1')}</div>
-              <Button
-                shape = "circle"
-                size = "large"
-                onClick = {() => {
-                  const theme = this.state.theme == 'default' ? 'dark' : 'default';
-                  this.setState({ theme }, () => {
-                    changeTheme(theme);
-                  });
-                }}
-              >
-                <Icon
-                  component = {this.state.theme == 'default' ? this.renderLight : this.renderDark}
-                />
-              </Button >
-              <Button
-                size = "large"
-                onClick = {() => {
-                  changeTheme({ '@primary-color': '#ff0000' });
-                }}
-              >
-                Change color
-              </Button >
+              <div >{t('h1')}</div >
             </Content >
           </Layout >
-        </Layout >
-        <div>
-          <Button
-            onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'de' : 'en')}
-          >
-            {t('change-locale')}
-          </Button>
-        </div>
+        </Layout >;
       </Layout >
     );
   }
 }
 
-// @ts-ignore
-IndexPage.getInitialProps = async () => ({
-  namespacesRequired: ['common'],
-})
-
-// @ts-ignore
-IndexPage.propTypes = {
-  t: PropTypes.func.isRequired,
-}
-// @ts-ignore
-export default withTranslation('common')(IndexPage);
