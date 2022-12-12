@@ -18,7 +18,7 @@
         "apollo-link-http": "^1.5.17",
         "cookie-parser": "^1.4.5",
         "css-loader": "^3.5.3",
-        "express": "^4.17.1",
+        "express": "^4.17.3",
         "graphql": "^15.0.0",
         "graphql-tag": "^2.10.3",
         "https-proxy-agent": "^5.0.0",
